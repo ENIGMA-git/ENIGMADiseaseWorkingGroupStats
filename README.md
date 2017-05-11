@@ -1,10 +1,12 @@
 # ENIGMA Effect size and GLM script
-*Dmitry Isaev, Boris Gutman, Neda Jahanshad, Sinead Kelly*
+*Dmitry Isaev, Sinead Kelly, Boris Gutman, Neda Jahanshad*
 
-The script is intended at batch processing of multiple linear models, and the results can be carried on to meta-analysis stage. 
+The script is intended for the batch processing of multiple linear models, and the results can easily be carried forward to meta-analysis with provided scripts. 
 Each working group may configure its own set of linear models, depending on imaging metrics and covariates data it has.
-Imaging metrics could be: **average ROI values (FA, MD, etc.)** or **shape vertexwise values**.
-Configuring script for average ROI values and shape vertexwise data is in a big way different, so below it is explained in 2 different paragraphs.
+Imaging metrics could be: **average ROI values (FA, volume etc.) in a .csv file ** or **shape vertexwise values** listed as paths in a .csv file.
+The working group project leader is the one to configure the files and set up the models for the analysis. Project participants then simply name the appropriate analysis in the scripts before running. When running the scripts, internat connection is necessary.  
+For project leaders setting up the configuration -- In this initial implementation, the configuring scripts for ROI values listed in a .csv and vertexwise data listed as file paths in the .csv need to be set up differently, so we explain each separately below.
+
 ### System requirements
 You need **R version 3.1.3** for running these scripts. Please install it yourself or ask administrator of your system to install it, before you start configuring and testing scripts.
 
@@ -75,7 +77,7 @@ SubjID | Site | Age | Sex |...
 
 
 ### Step 4. Prepare QA analysis file (if you have one).
-If you did automatic QA, please copy your QA analysis output .csv file to `data` folder. For example:
+From the ENIGMA Shape analysis, if you did automatic QA, please copy your QA analysis output .csv file to `data` folder. For example:
 ```
 	/<path-to-your-folder>/ENIGMA/data/QA.csv
 ```
