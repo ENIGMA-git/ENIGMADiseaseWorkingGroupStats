@@ -1,0 +1,2 @@
+ID,AnalysisList_Path,DemographicsList_Path,Type,Trait
+UKBB_Kevin_Troubleshooting,/ifs/loni/faculty/thompson/four_d/klow/training/script/model_selection.csv,/ifs/loni/faculty/thompson/four_d/klow/training/script/demographic_selection.csv,raw,LogJacs;thick

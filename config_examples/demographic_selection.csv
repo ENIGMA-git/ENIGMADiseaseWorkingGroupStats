@@ -1,0 +1,7 @@
+﻿Type,varname,Filter,Stats,StatsNames,SepFile,Active,Covariate,Postfix
+METRICS,all,None,colMeans;colSds;colMins;colMaxs;lengthNNA;,mu.raw;sd.raw;min.raw;max.raw;n.raw;,1,1,,all
+COV,AgeAtScan,None,mean;sd;range,mu;sd;range,0,1,AgeAtScan,age
+NUM,n,__Sex__==0,length,fem,0,1,,fem
+NUM,n,__Sex__==1,length,mal,0,1,,mal
+NUM,n,"__APOE_Status__==""E3E3""",length,e3e3,0,1,,e3e3
+NUM,n,"__APOE_Status__==""E4E4""",length,e4e4,0,1,,e4e4
