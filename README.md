@@ -8,18 +8,19 @@ The working group project leader is the one to configure the files and set up th
 For project leaders setting up the configuration -- In this initial implementation, the configuring scripts for ROI values listed in a .csv and vertexwise data listed as file paths in the .csv need to be set up differently, so we explain each separately below.
 
 ### System requirements
-You need **R version 3.1.3** for running these scripts. Please install it yourself or ask administrator of your system to install it, before you start configuring and testing scripts.
+You need **R version 4.0.5 or later** and **Python version 2.7.0 or later** to run these scripts. Please install it yourself or ask the administrator of your system to install it, before you start configuring and testing scripts.
 
 ### Contents of the package
-In order to run the package, the following data should be present:
-- Linear Models and Demographics statistics configuration file (*Google Docs*)
-- Average ROI imaging measures/vertexwise shape measures (*shape output .raw or average ROI .csv files on end user machine*)
-- Covariates files (*.csv files on end user machine*)
 The following scripts should be downloaded from GitHub:
-- Script shell-wrapper (*mass_uv_regr\[_csv\].sh file on end user machine*)
+- Script shell-wrapper (*mass_uv_regr.sh file on end user machine*)
 - The R executable code (*mass_uv_regr.R file on end user machine*)
+- Python executable code (*retrieve_gsheets.py file on end user machine*)
 - Shell-wrapper for script for concatenating results from all ROIs (*concat_mass_uv_regr\[_csv\].sh file on end user machine*)
 - The R executable code for concatenating results from all ROIs (*concat_mass_uv_regr\[_csv\].R file on end user machine*)
+In order to run the package, you will also need to supply the following data:
+- Linear Models and Demographics statistics configuration file (*Upload both to to Google Docs*)
+- Average ROI imaging measures/vertexwise shape measures (*shape output .raw or average ROI .csv files on end user machine*)
+- Covariates files (*.csv files on end user machine*)
 
 # Step by step tutorial on setting up your analysis with Average ROI metrics
 This section is a step-by-step tutorial on setting up analysis with Average ROI metrics.
@@ -73,7 +74,7 @@ SubjID | Site | Age | Sex |...
 \<ID_2\>|USC|37| 0 | ...
 ...|...|...|...|...
 
-**SubjID** column name should not be changed. If you do multi-site study, then **Site** column is obligatory.  Please check that Subject IDs and number of rows in covariates and metrics CSV match. It's necessary for correct script performance. Please take a look at the [Example of covariates.csv](http://covariates.csv)
+**SubjID** column name should not be changed. If you do a multi-site study, then **Site** column is obligatory.  Please check that Subject IDs and number of rows in covariates and metrics CSV match. It's necessary for correct script performance. Please take a look at the [Example of covariates.csv](http://covariates.csv)
 
 
 ### Step 4. Prepare QA analysis file (if you have one).
@@ -93,9 +94,9 @@ SubjID | **ROI**\<ROI_Name1\> | **ROI**\<ROI_Name2\> | ... | **ROI**\<ROI_Name#N
 **SubjID** column name should not be changed. Columns corresponding to ROIs have to have prefix **ROI** and then real ROI name(same as in metrics and covariates CSV files) without any space.
 
 ### Step 5. Register your study in ENIGMA-Analysis Google Sheet (Should be done by Group Leader).
-Main configuration file is [ENIGMA Analysis Google Sheet](https://docs.google.com/spreadsheets/d/142eQItt4C_EJQff56-cpwlUPK7QmPICOgSHfnhGWx-w), that is shared by all group leaders, each of them owning one or several lines in the sheet.
+Main configuration file is [ENIGMA Analysis Google Sheet](https://docs.google.com/spreadsheets/d/1-ThyEvz1qMOlEOrm2yM86rD_KABr_YE4yqYmHogaQg0), that is shared by all group leaders, each of them owning one or several lines in the sheet.
 #### ENIGMA Analysis Google Sheet structure
-[ENIGMA Analysis Google Sheet](https://docs.google.com/spreadsheets/d/142eQItt4C_EJQff56-cpwlUPK7QmPICOgSHfnhGWx-w) consists of the following columns:
+[ENIGMA Analysis Google Sheet](https://docs.google.com/spreadsheets/d/1-ThyEvz1qMOlEOrm2yM86rD_KABr_YE4yqYmHogaQg0) consists of the following columns:
 
 1. **ID**. Unique ID of your study
 2. **AnalysisList_Path**. Link to Google Sheet with configuration of your Linear Models.
@@ -216,10 +217,13 @@ Three types of descriptive statistics can be specified in this file:
 - METRICS
 - COV
 - NUM
+
 #### 7.1. Metrics
 **METRICS** will output summary information (mean, sd, min, max) for each imaging measure (e.g. FA, volume, thickness) for each ROI or structure.  You can also split this up based on the groups in your analysis (patients, controls, medicated patients, unmedicated patients etc). See the ‘Filter’ column.  ‘Stats’ and ‘StatsNames’ columns indicate the statistics you want to obtain (sd, mean etc). 
+
 #### 7.2. COV (Covariates)
 **COV** obtains descriptive statistics (mean, sd, range) for each of your continuous variables in the analysis (e.g. age, duration of illness, age at onset etc.).  If you want to split this up in terms of your groups (patients, controls, medicated, unmedicated) use the ‘Filter’ column to specify your groups (see example). The ‘Covariate’ column will remain the same as the ‘Varname’ column and the ‘Postfix’ column will contain the postfix you want to give each output file. 
+
 #### 7.3. NUM (amount of subjects in different subsets
 **NUM** obtains the number (n) of participants for each categorical variable in your analysis (e.g. Diagnosis, Sex, medication type, smokers, non-smokers), but you also can filter subjects with continious variables (e.g. Age>30)
 Using the ‘Filter’ column, indicate if you want n for:
@@ -239,7 +243,7 @@ Unmedicated females (assuming unmedicated patients are coded as “1”):
 
 	(__Sex__==2) & (__AP__==1)
 
-See example [Example DempographicsList Google Sheet](https://docs.google.com/spreadsheets/d/10YFVkYhKgDBsAnvkmCx7e_Iff2dmLJ0wyrsAbt82Cak) file for more filters.
+See example [Example DemographicsList Google Sheet](https://docs.google.com/spreadsheets/d/10YFVkYhKgDBsAnvkmCx7e_Iff2dmLJ0wyrsAbt82Cak) file for more filters.
 The working group leader in this case can intuitively name the ‘StatsNames’ column.
 
 ‘Active’ columns can be left as “1” for active or “0” for inactive.
@@ -247,25 +251,28 @@ The working group leader in this case can intuitively name the ‘StatsNames’ 
 *'Sepfile' column is deprecated. Set it to 0*.
 
 ### Step 8. Download scripts and adjust mass_uv_regr_csv.sh
-Download all files from `script` folder on GitHub into `/<path-to-your-folder>/ENIGMA/scripts`.
-Give yourself permissions to everything in the folders
+Download all files from the `script` folder on GitHub into `/<path-to-your-folder>/ENIGMA/scripts`.
+Give yourself permissions to everything in the folders:
 
     chmod -R 755 /<path-to-your-folder>/ENIGMA/scripts  
 
 Open `mass_uv_regr_csv.sh` in any text editor and configure as follows for your own analysis.
+
 ##### 8.1  Section 1:
 
-- `scriptDir="/<path-to-your-folder>/ENIGMA/scripts"`
-- `resDir="/<path-to-your-folder>/ENIGMA/results"`
-- `logDir="/<path-to-your-folder>/ENIGMA/logs"`
+- `scriptDir=/<path-to-your-folder>/ENIGMA/scripts`
+- `resDir=/<path-to-your-folder>/ENIGMA/results`
+- `logDir=/<path-to-your-folder>/ENIGMA/logs`
+
+If you are using a conda or virtual environment, be sure set this up where indicated:
     
-    
+    conda activate <name_of_env>
 ##### 8.2 Section 2. Main configuration section
 
 - `RUN_ID="<STUDY_ID>"` - Unique ID of your study from ENIGMA Analysis Google Docs file (see **Step 5**)
-- `CONFIG_PATH="https://docs.google.com/spreadsheets/d/1AxtW4xN8ETZUHvztqqkF0jD68Mm_5SNPWV2Y6HPFrh8"` - path to ENIGMA Analysis Google Docs file. The script will take the AnalysisList_Path and DemographicsList_Path links from the line of config file with RUN_ID and will run the models from these files.
+- `CONFIG_PATH="https://docs.google.com/spreadsheets/d/1-ThyEvz1qMOlEOrm2yM86rD_KABr_YE4yqYmHogaQg0"` - path to ENIGMA Analysis Google Docs file. The script will retrieve the row in the shared config file that matches your RUN_ID, read the AnalysisList_Path and DemographicsList_Path csvs from their respective links, and run the models from these files.
 - `SITE="<SITE_NAME>"` - the name of particular site for which the script is being configured. It will become the postfix for the resulting files.
-- `DATADIR="/<path-to-your-folder>/ENIGMA/data"` - folder where the covariates,metrics and QC reside.
+- `DATADIR="/<path-to-your-folder>/ENIGMA/data"` - folder where the covariates, metrics and QC files reside.
 - `ROI_LIST` - list of ROIs (have pre-set value for shapes and csv, maybe no need to change it)
 - `SUBJECTS_COV="/<path-to-your-folder>/ENIGMA/data/covariates.csv"`
 - `EXCLUDE_FILE="/<path-to-your-folder>/ENIGMA/data/QA.csv"` path to QA file. (!!!) ADD QA_LEVEL
@@ -275,13 +282,22 @@ Open `mass_uv_regr_csv.sh` in any text editor and configure as follows for your 
 ##### 8.3 Section 5. Path to R binary 
 - `Rbin="<path_to_R_binary>` - put here the path to R binary ( for which you installed the packages)
 
-### Step 9. Make sure you have R packages installed.
+### Step 9. Make sure you have R & Python packages installed.
 Before running the script you have to make sure you have all necessary libraries for R.
 The following packages should be installed for R:
 	`matrixStats`,
 	`RCurl`,
 	`ppcor`,
-	`moments`.
+	`moments`
+	`reticulate`.
+	
+And the following packages should be installed for Python:
+  `os`
+  `sys`
+  `pandas`
+  `csv`
+  `requests`.
+
 ### Step 10. Running the script.
 You can split this up for parallelized regressions if you Q-SUB it!
 
@@ -323,21 +339,11 @@ also, for each ROI you will have METRIC/COV/NUM.RData. For COV and NUM that's re
 
 ### Step 12. Concatenating results for subsequent meta-analysis.
  After running the script you may want to concatenate .CSV files from each ROI.
-For this you should use the script `concat_mass_uv_regr_csv.sh` which calls `concat_mass_uv_regr.R`
+For this you should use the script `concat_mass_uv_regr_csv.sh`, which calls `concat_mass_uv_regr.R`
 
-##### 12.1 Create roi_list.txt
-You will need a separate file with all ROI names that you used on the previous step to run the script.
-It should be a text file `/<path-to-your-folder>/ENIGMA/scripts/roi_list.txt`, and should have one line, containing ROI names, in quotes, separated by commas.
-so, if your variable `ROI_LIST` in `mass_uv_regr_csv.sh` looks like this:
+You will need to configure the `concat_mass_uv_regr_csv.sh` script. Many of the variables are identical to those used in mass_uv_regr_loop.bash.
 
-	ROI_LIST=("AF_L" "AF_R" "AF" "IFOF_L" "IFOF_R" "IFOF")
-	
-then your single line in roi_list.txt should look like this:
-
-	"AF_L","AF_R","AF","IFOF_L","IFOF_R","IFOF"
-
-After you created this file, you should configure `concat_mass_uv_regr_csv.sh` script.
-##### 12.2 Configuring `concat_mass_uv_regr_csv.sh` script. Section 1:
+##### 12.2 Section 1:
 
 	scriptDir,
 	resDir,
@@ -348,8 +354,9 @@ After you created this file, you should configure `concat_mass_uv_regr_csv.sh` s
 	RUN_ID,
 	CONFIG_PATH,
 	SITE,
+	ROI_LIST
 \-same as in mass_uv_regr.sh, see **Step 8.2**
-\- `ROI_LIST_TXT="$scriptDir/roi_list.txt"`
+
 ##### 12.3 Running the script:
 	sh  concat_mass_uv_regr_csv.sh
 

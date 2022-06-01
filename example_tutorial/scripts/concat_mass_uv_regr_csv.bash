@@ -15,19 +15,19 @@
 #-----------------------------------------------
 
 #---Section 1. Script directories
-scriptDir="/ifshome/disaev/ENIGMA_TUTORIAL/scripts/" ## where you have downloaded the ENIGMA Regression R scripts!
-resDir="/ifshome/disaev/ENIGMA_TUTORIAL/results/"   ## directory to be created for your results!
-logDir="/ifshome/disaev/ENIGMA_TUTORIAL/log/"        ## directory to be created to output the log files
-
+scriptDir=/<path_to_folder>/ENIGMA/scripts ; # directory where you have downloaded the ENIGMA R scripts
+resDir=/<path_to_folder>/ENIGMA/results ; # directory where your results have been saved
+logDir=/<path_to_folder>/ENIGMA/log ;  # directory where your log files are
 
 #---Section 2. Configuration variables-----
-RUN_ID="ENIGMA_TUTORIAL"
-CONFIG_PATH="https://docs.google.com/spreadsheets/d/142eQItt4C_EJQff56-cpwlUPK7QmPICOgSHfnhGWx-w"
-SITE="MDR"
-ROI_LIST_TXT="$scriptDir/roi_list.txt"
+
+RUN_ID="UCLA_EPI_Uyen_Test" ;
+CONFIG_PATH="https://docs.google.com/spreadsheets/d/1-ThyEvz1qMOlEOrm2yM86rD_KABr_YE4yqYmHogaQg0"
+SITE="UCLA" ;
+ROI_LIST=( "L_bankssts_thickavg" "R_bankssts_thickavg" )
 
 #---Section 5. R binary -- CHANGE this to reflect the full path or your R binary
-Rbin=/usr/local/R-3.1.3/bin/R
+Rbin=R
 
 ##############################################################################################
 ## no need to edit below this line!!
@@ -49,6 +49,22 @@ then
    "The Log directory you indicated does not exist, please recheck this."
 fi
 
+#Uyen changed: removed requirement for another text file with ROIs, seems unnecessary
+ROI_FILE=$logDir/ROI_LIST.txt
+touch $ROI_FILE
+
+#for Uyen's sanity
+> $ROI_FILE
+
+for ROI in "${ROI_LIST[@]::${#ROI_LIST[@]}-1}"; do
+	echo -n -e "\"${ROI}\"," >> $ROI_FILE
+done
+echo -n -e "\"${ROI_LIST[-1]}\"" >> $ROI_FILE
+
+# for ROI in "${ROI_LIST[@]}"; do
+# 	echo -n "\"${ROI}\"," >> $ROI_FILE
+# done
+# echo "\b"
 
 OUT=$logDir/log_concat.txt
 touch $OUT
@@ -57,9 +73,8 @@ cmd="${Rbin} --no-save --slave --args\
 		${SITE} \
 		${logDir} \
 		${resDir} \
-		${ROI_LIST_TXT} \
+		${ROI_FILE} \
 		${CONFIG_PATH} \
 		<  ${scriptDir}/concat_mass_uv_regr.R"
-echo $cmd
 echo $cmd >> $OUT
 eval $cmd

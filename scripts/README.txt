@@ -10,22 +10,25 @@ ENIGMA Project, 3.1.015
 0. THIS IS THE BETA VERSION. Please check your analyses and results!! More complex models which use filters and new regressors may not have been tested using the combinations you have entered, so please let us know if you encounter any problems or have concerns. 
 The script will create log files in the **log** directory. If you note an "Error" in a log file, please double check the analysis and send questions to us (Dmitry, Boris or Neda) at enigma@ini.usc.edu. 
 
-1. The scripts folder consists of 3 files:
-	Customized bash scripts for running on your local machine or server:
-	* mass_uv_regr_shapes.sh - wrapper that can be used with/or without qsub for running vertexwise stats over the shape data
-	* mass_uv_regr_csv.sh - wrapper that can be used with/or without qsub for running over the csv data
-	Universal regression models for ENIGMA groups
-	* mass_uv_regr.R - R-based regression code for processing the data
+1. The scripts folder consists of 5 files:
+	* mass_uv_regr.bash - wrapper that can be used with/or without qsub for running over either csv or shape data
+	* mass_uv_regr.R - R-based regression code for processing data
+	* retrieve_gsheets.py - Python executable code used to pull from google sheets
+	* concat_mass_uv_regr_csv.bash - wrapper that can be used with/or without qsub for concatenating regression results from all ROIs
+	* concat_mass_uv_regr.R - R executable code for concatenating results from all ROIs
 	
-.sh scripts should be modified to specify your local paths and files
+.sh scripts should be modified to specify your local paths and files.
 
 2. Installation. 
 2.1 Prerequisites. R libraries:
-The following packages should be installed for R:
+The following packages should be installed for R (v. >=4.0.5):
 	matrixStats
 	RCurl
 	ppcor
 	moments
+The following packages should be installed for Python (v. >=2.7:
+	pandas
+	requests
 2.2 Configuring the shell script.
 2.2.1 Give yourself permissions to everything in the folders
 	chmod -R 755 ENIGMA_Regressions/*  
@@ -35,7 +38,7 @@ The following packages should be installed for R:
 	logDir - directory for logs
 2.2.3 Section 2. Main configuration section
 	RUN_ID="IJSHAPES"
-	CONFIG_PATH="https://docs.google.com/spreadsheets/d/1AxtW4xN8ETZUHvztqqkF0jD68Mm_5SNPWV2Y6HPFrh8"
+	CONFIG_PATH="https://docs.google.com/spreadsheets/d/1-ThyEvz1qMOlEOrm2yM86rD_KABr_YE4yqYmHogaQg0"
 	
 	CONFIG_PATH is the path to Google Sheets documents which contains the links to 2 other documents as well as Study ID, type (csv/raw) and Traits to be examined. 
 	Working group leaders should contact us about making an entry in the shared docs so all sites can perform the same tests.
@@ -126,10 +129,8 @@ Things you need to configure:
 	RUN_ID,
 	CONFIG_PATH,
 	SITE,
+	ROI_LIST,
 	- same as in mass_uv_regr.sh, see p. 2.2.3
-	
-	ROI_LIST - DO NOT CHANGE
 6.4 Running the script:
 sh  same as in mass_uv_regr.sh, see p. 2.2.2
 6.5 Results: files {GROUP_ID}_{METRICS}_ALL_{MODEL_ID}_{SitePostfix}.csv - all ROI for the same model and same trait concatenated in one file.
-
